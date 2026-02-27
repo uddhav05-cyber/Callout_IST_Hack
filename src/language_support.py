@@ -131,7 +131,10 @@ def detectLanguage(text: str) -> Language:
         logger.info(f"Detected language: {language.value} ({LANGUAGE_NAMES[language]})")
         return language
         
-    except (ImportError, LangDetectException) as e:
+    except ImportError as e:
+        logger.warning(f"langdetect library not installed: {e}. Defaulting to English")
+        return Language.ENGLISH
+    except Exception as e:
         logger.warning(f"Language detection failed: {e}. Defaulting to English")
         return Language.ENGLISH
 
