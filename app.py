@@ -146,7 +146,7 @@ st.markdown("---")
 # Add key features highlight
 st.markdown("### ✨ What Makes Us Different")
 
-feature_col1, feature_col2, feature_col3, feature_col4 = st.columns(4)
+feature_col1, feature_col2, feature_col3, feature_col4, feature_col5 = st.columns(5)
 
 with feature_col1:
     st.markdown("""
@@ -178,6 +178,15 @@ with feature_col3:
 with feature_col4:
     st.markdown("""
     <div style="text-align: center; padding: 1rem; background-color: #f0f2f6; border-radius: 10px;">
+        <h3 style="margin: 0;">🎬</h3>
+        <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;"><strong>Multi-Modal</strong></p>
+        <p style="margin: 0; font-size: 0.8rem; color: #666;">Text, image, audio, video</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+with feature_col5:
+    st.markdown("""
+    <div style="text-align: center; padding: 1rem; background-color: #f0f2f6; border-radius: 10px;">
         <h3 style="margin: 0;">⚡</h3>
         <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;"><strong>Fast & Free</strong></p>
         <p style="margin: 0; font-size: 0.8rem; color: #666;">Results in 30 seconds</p>
@@ -186,8 +195,14 @@ with feature_col4:
 
 st.markdown("---")
 
-# Input section with tabs
-tab1, tab2 = st.tabs(["📰 URL Input", "📝 Text Input"])
+# Input section with tabs for multi-modal verification
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    "📰 URL Input", 
+    "📝 Text Input", 
+    "🖼️ Image Upload", 
+    "🎵 Audio Upload", 
+    "🎬 Video Upload"
+])
 
 with tab1:
     st.subheader("Enter Article URL")
@@ -225,6 +240,90 @@ with tab2:
             st.session_state['input'] = text_input
             st.session_state['input_type'] = 'text'
             st.session_state['analyze'] = True
+
+with tab3:
+    st.subheader("Upload Image for Verification")
+    st.info("🚧 **Coming Soon:** Image verification with reverse search, manipulation detection, and OCR")
+    
+    uploaded_image = st.file_uploader(
+        "Choose an image file",
+        type=['jpg', 'jpeg', 'png', 'gif', 'bmp'],
+        help="Upload an image to verify its authenticity"
+    )
+    
+    if uploaded_image is not None:
+        st.image(uploaded_image, caption="Uploaded Image", use_column_width=True)
+        
+        if st.button("Verify Image", key="image_button", type="primary"):
+            st.warning("⚠️ Image verification is in development. This feature will include:")
+            st.markdown("""
+            - 🔍 **Reverse Image Search** - Find original source
+            - 🎨 **Manipulation Detection** - Detect edits and deepfakes
+            - 📝 **OCR Text Extraction** - Extract and verify text in images
+            - 📊 **Metadata Analysis** - Check EXIF data and creation date
+            - 🤖 **AI Generation Detection** - Detect AI-generated images
+            """)
+            
+            # Placeholder for future implementation
+            st.session_state['input'] = uploaded_image
+            st.session_state['input_type'] = 'image'
+            # st.session_state['analyze'] = True  # Uncomment when implemented
+
+with tab4:
+    st.subheader("Upload Audio for Verification")
+    st.info("🚧 **Coming Soon:** Audio verification with speech-to-text and deepfake detection")
+    
+    uploaded_audio = st.file_uploader(
+        "Choose an audio file",
+        type=['mp3', 'wav', 'ogg', 'm4a', 'flac'],
+        help="Upload an audio file to verify its authenticity"
+    )
+    
+    if uploaded_audio is not None:
+        st.audio(uploaded_audio, format=f'audio/{uploaded_audio.type.split("/")[1]}')
+        
+        if st.button("Verify Audio", key="audio_button", type="primary"):
+            st.warning("⚠️ Audio verification is in development. This feature will include:")
+            st.markdown("""
+            - 🎤 **Speech-to-Text** - Transcribe audio content
+            - ✅ **Text Verification** - Verify transcribed claims
+            - 🤖 **Deepfake Detection** - Detect AI-generated voices
+            - 📊 **Audio Analysis** - Analyze quality and authenticity
+            - 🔊 **Voice Authentication** - Verify speaker identity
+            """)
+            
+            # Placeholder for future implementation
+            st.session_state['input'] = uploaded_audio
+            st.session_state['input_type'] = 'audio'
+            # st.session_state['analyze'] = True  # Uncomment when implemented
+
+with tab5:
+    st.subheader("Upload Video for Verification")
+    st.info("🚧 **Coming Soon:** Video verification with deepfake detection and frame analysis")
+    
+    uploaded_video = st.file_uploader(
+        "Choose a video file",
+        type=['mp4', 'avi', 'mov', 'mkv', 'webm'],
+        help="Upload a video file to verify its authenticity"
+    )
+    
+    if uploaded_video is not None:
+        st.video(uploaded_video)
+        
+        if st.button("Verify Video", key="video_button", type="primary"):
+            st.warning("⚠️ Video verification is in development. This feature will include:")
+            st.markdown("""
+            - 🎬 **Frame Analysis** - Extract and analyze key frames
+            - 🎵 **Audio Verification** - Verify audio track separately
+            - 🤖 **Deepfake Detection** - Detect face swaps and manipulation
+            - ✂️ **Edit Detection** - Identify cuts and splices
+            - 📊 **Metadata Analysis** - Check video properties and creation date
+            """)
+            
+            # Placeholder for future implementation
+            st.session_state['input'] = uploaded_video
+            st.session_state['input_type'] = 'video'
+            # st.session_state['analyze'] = True  # Uncomment when implemented
 
 # Example articles section
 st.markdown("---")
