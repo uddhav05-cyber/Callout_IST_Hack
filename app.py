@@ -17,7 +17,7 @@ logging.basicConfig(
 
 # Page configuration
 st.set_page_config(
-    page_title="Fake News Detector",
+    page_title="Callout - Fake News Detector",
     page_icon="🔍",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -66,9 +66,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Main header
-st.markdown('<div class="main-header">🔍 Fake News Detector</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-header">🔍 Callout</div>', unsafe_allow_html=True)
 st.markdown(
-    '<div class="sub-header">AI-powered article verification using Natural Language Inference</div>',
+    '<div class="sub-header">AI-powered misinformation detection using Natural Language Inference</div>',
     unsafe_allow_html=True
 )
 
@@ -711,15 +711,15 @@ if 'verdict' in st.session_state:
         st.download_button(
             label="📥 Download as JSON",
             data=json_str,
-            file_name="verification_results.json",
+            file_name="callout_verification_results.json",
             mime="application/json"
         )
     
     with col2:
         # Export to PDF (simplified text version)
         pdf_text = f"""
-FAKE NEWS DETECTION REPORT
-==========================
+CALLOUT - MISINFORMATION DETECTION REPORT
+==========================================
 
 Overall Verdict: {verdict_value}
 Confidence Score: {verdict.confidenceScore:.1f}%
@@ -742,7 +742,7 @@ CLAIM BREAKDOWN
         st.download_button(
             label="📥 Download as Text Report",
             data=pdf_text,
-            file_name="verification_results.txt",
+            file_name="callout_verification_results.txt",
             mime="text/plain"
         )
     
@@ -751,14 +751,14 @@ CLAIM BREAKDOWN
         verdict_emoji = verdict_icons.get(verdict_value, '?')
         badge_text = f"""
 ━━━━━━━━━━━━━━━━━━━━━━
-   FACT-CHECK RESULT
+   CALLOUT VERIFICATION
 ━━━━━━━━━━━━━━━━━━━━━━
 
 {verdict_emoji} {verdict_value}
 Confidence: {verdict.confidenceScore:.0f}%
 Factual Accuracy: {verdict.factualAccuracyScore:.0f}%
 
-Verified by AI Fact-Checker
+Verified by Callout
 Evidence-based analysis
 {len(verdict.claimBreakdown) if verdict.claimBreakdown else 0} claims verified
 
@@ -767,7 +767,7 @@ Evidence-based analysis
         st.download_button(
             label="📋 Copy Shareable Badge",
             data=badge_text,
-            file_name="fact_check_badge.txt",
+            file_name="callout_fact_check_badge.txt",
             mime="text/plain"
         )
     
@@ -852,7 +852,7 @@ with footer_col4:
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; padding: 2rem; background-color: #f0f2f6; border-radius: 10px;">
-    <h3>🎯 Built for Truth, Powered by AI</h3>
+    <h3>🎯 Callout - Built for Truth, Powered by AI</h3>
     <p style="color: #666; margin-bottom: 1rem;">
         This system combines LLM-based claim extraction, multi-source evidence retrieval, 
         NLI verification, and source credibility analysis to provide transparent, evidence-based fact-checking.
