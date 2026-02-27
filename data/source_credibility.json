@@ -1,0 +1,236 @@
+{
+  "sources": {
+    "apnews.com": {
+      "credibilityScore": 0.95,
+      "category": "TRUSTED",
+      "description": "Associated Press - International news agency"
+    },
+    "reuters.com": {
+      "credibilityScore": 0.95,
+      "category": "TRUSTED",
+      "description": "Reuters - International news organization"
+    },
+    "bbc.com": {
+      "credibilityScore": 0.9,
+      "category": "TRUSTED",
+      "description": "BBC - British Broadcasting Corporation"
+    },
+    "bbc.co.uk": {
+      "credibilityScore": 0.9,
+      "category": "TRUSTED",
+      "description": "BBC - British Broadcasting Corporation"
+    },
+    "npr.org": {
+      "credibilityScore": 0.9,
+      "category": "TRUSTED",
+      "description": "NPR - National Public Radio"
+    },
+    "pbs.org": {
+      "credibilityScore": 0.9,
+      "category": "TRUSTED",
+      "description": "PBS - Public Broadcasting Service"
+    },
+    "theguardian.com": {
+      "credibilityScore": 0.85,
+      "category": "TRUSTED",
+      "description": "The Guardian - British newspaper"
+    },
+    "nytimes.com": {
+      "credibilityScore": 0.85,
+      "category": "TRUSTED",
+      "description": "The New York Times"
+    },
+    "washingtonpost.com": {
+      "credibilityScore": 0.85,
+      "category": "TRUSTED",
+      "description": "The Washington Post"
+    },
+    "wsj.com": {
+      "credibilityScore": 0.85,
+      "category": "TRUSTED",
+      "description": "The Wall Street Journal"
+    },
+    "economist.com": {
+      "credibilityScore": 0.85,
+      "category": "TRUSTED",
+      "description": "The Economist"
+    },
+    "nature.com": {
+      "credibilityScore": 0.95,
+      "category": "TRUSTED",
+      "description": "Nature - Scientific journal"
+    },
+    "science.org": {
+      "credibilityScore": 0.95,
+      "category": "TRUSTED",
+      "description": "Science Magazine"
+    },
+    "cnn.com": {
+      "credibilityScore": 0.7,
+      "category": "MAINSTREAM",
+      "description": "CNN - Cable News Network"
+    },
+    "foxnews.com": {
+      "credibilityScore": 0.6,
+      "category": "MAINSTREAM",
+      "description": "Fox News"
+    },
+    "msnbc.com": {
+      "credibilityScore": 0.65,
+      "category": "MAINSTREAM",
+      "description": "MSNBC"
+    },
+    "usatoday.com": {
+      "credibilityScore": 0.75,
+      "category": "MAINSTREAM",
+      "description": "USA Today"
+    },
+    "time.com": {
+      "credibilityScore": 0.75,
+      "category": "MAINSTREAM",
+      "description": "Time Magazine"
+    },
+    "newsweek.com": {
+      "credibilityScore": 0.7,
+      "category": "MAINSTREAM",
+      "description": "Newsweek"
+    },
+    "politico.com": {
+      "credibilityScore": 0.75,
+      "category": "MAINSTREAM",
+      "description": "Politico"
+    },
+    "thehill.com": {
+      "credibilityScore": 0.7,
+      "category": "MAINSTREAM",
+      "description": "The Hill"
+    },
+    "cbsnews.com": {
+      "credibilityScore": 0.75,
+      "category": "MAINSTREAM",
+      "description": "CBS News"
+    },
+    "abcnews.go.com": {
+      "credibilityScore": 0.75,
+      "category": "MAINSTREAM",
+      "description": "ABC News"
+    },
+    "nbcnews.com": {
+      "credibilityScore": 0.75,
+      "category": "MAINSTREAM",
+      "description": "NBC News"
+    },
+    "latimes.com": {
+      "credibilityScore": 0.75,
+      "category": "MAINSTREAM",
+      "description": "Los Angeles Times"
+    },
+    "chicagotribune.com": {
+      "credibilityScore": 0.7,
+      "category": "MAINSTREAM",
+      "description": "Chicago Tribune"
+    },
+    "sfchronicle.com": {
+      "credibilityScore": 0.7,
+      "category": "MAINSTREAM",
+      "description": "San Francisco Chronicle"
+    },
+    "bostonglobe.com": {
+      "credibilityScore": 0.75,
+      "category": "MAINSTREAM",
+      "description": "Boston Globe"
+    },
+    "dailymail.co.uk": {
+      "credibilityScore": 0.45,
+      "category": "QUESTIONABLE",
+      "description": "Daily Mail - British tabloid"
+    },
+    "nypost.com": {
+      "credibilityScore": 0.45,
+      "category": "QUESTIONABLE",
+      "description": "New York Post"
+    },
+    "thesun.co.uk": {
+      "credibilityScore": 0.4,
+      "category": "QUESTIONABLE",
+      "description": "The Sun - British tabloid"
+    },
+    "mirror.co.uk": {
+      "credibilityScore": 0.4,
+      "category": "QUESTIONABLE",
+      "description": "Daily Mirror - British tabloid"
+    },
+    "buzzfeed.com": {
+      "credibilityScore": 0.45,
+      "category": "QUESTIONABLE",
+      "description": "BuzzFeed"
+    },
+    "huffpost.com": {
+      "credibilityScore": 0.55,
+      "category": "MAINSTREAM",
+      "description": "HuffPost"
+    },
+    "vox.com": {
+      "credibilityScore": 0.65,
+      "category": "MAINSTREAM",
+      "description": "Vox"
+    },
+    "vice.com": {
+      "credibilityScore": 0.6,
+      "category": "MAINSTREAM",
+      "description": "Vice"
+    },
+    "breitbart.com": {
+      "credibilityScore": 0.25,
+      "category": "UNRELIABLE",
+      "description": "Breitbart - Far-right news"
+    },
+    "infowars.com": {
+      "credibilityScore": 0.1,
+      "category": "UNRELIABLE",
+      "description": "InfoWars - Conspiracy theories"
+    },
+    "naturalnews.com": {
+      "credibilityScore": 0.15,
+      "category": "UNRELIABLE",
+      "description": "Natural News - Pseudoscience"
+    },
+    "beforeitsnews.com": {
+      "credibilityScore": 0.1,
+      "category": "UNRELIABLE",
+      "description": "Before It's News - Conspiracy theories"
+    },
+    "theonion.com": {
+      "credibilityScore": 0.0,
+      "category": "UNRELIABLE",
+      "description": "The Onion - Satire (not news)"
+    },
+    "clickhole.com": {
+      "credibilityScore": 0.0,
+      "category": "UNRELIABLE",
+      "description": "ClickHole - Satire (not news)"
+    },
+    "wikipedia.org": {
+      "credibilityScore": 0.7,
+      "category": "MAINSTREAM",
+      "description": "Wikipedia - User-edited encyclopedia"
+    },
+    "snopes.com": {
+      "credibilityScore": 0.85,
+      "category": "TRUSTED",
+      "description": "Snopes - Fact-checking site"
+    },
+    "factcheck.org": {
+      "credibilityScore": 0.9,
+      "category": "TRUSTED",
+      "description": "FactCheck.org - Fact-checking site"
+    },
+    "politifact.com": {
+      "credibilityScore": 0.85,
+      "category": "TRUSTED",
+      "description": "PolitiFact - Fact-checking site"
+    }
+  },
+  "defaultCredibilityScore": 0.5,
+  "lastUpdated": "2024-01-01T00:00:00Z"
+}
