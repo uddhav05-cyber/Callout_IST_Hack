@@ -7,6 +7,7 @@ This application provides a user-friendly interface for verifying article authen
 import streamlit as st
 from src.verification_pipeline import verifyArticle
 from src.models import VerdictType
+from src.language_support import Language, LANGUAGE_NAMES, getUITranslations, detectLanguage
 import logging
 
 # Configure logging
@@ -84,6 +85,46 @@ with st.sidebar:
     - Generating comprehensive verdicts
     """)
     
+    # Language selector
+    st.markdown("---")
+    st.header("🌍 Language / भाषा / 语言")
+    
+    # Initialize session state for language
+    if 'selected_language' not in st.session_state:
+        st.session_state['selected_language'] = Language.AUTO
+    
+    selected_lang = st.selectbox(
+        "Select Language",
+        options=list(Language),
+        format_func=lambda x: LANGUAGE_NAMES[x],
+        index=list(Language).index(st.session_state['selected_language']),
+        key="language_selector"
+    )
+    
+    # Update session state
+    if selected_lang != st.session_state['selected_language']:
+        st.session_state['selected_language'] = selected_lang
+        st.rerun()
+    
+    # Get translations for selected language
+    if st.session_state['selected_language'] == Language.AUTO:
+        # Use English as default for UI
+        ui_lang = Language.ENGLISH
+    else:
+        ui_lang = st.session_state['selected_language']
+    
+    translations = getUITranslations(ui_lang)
+    
+    st.info(f"""
+    **Multilingual Support:**
+    - Auto-detects article language
+    - Supports 10+ languages
+    - Multilingual NLI models
+    - Language-specific prompts
+    """)
+    
+    st.markdown("---")
+    
     st.header("How It Works")
     st.write("""
     1. 🔍 **Extract Claims** - Identify factual statements
@@ -100,6 +141,7 @@ with st.sidebar:
     - We verify against REAL sources
     - We show our REASONING
     - You can VERIFY our work
+    - **MULTILINGUAL** - 10+ languages
     """)
     
     st.header("Our Unique Features")
@@ -120,6 +162,11 @@ with st.sidebar:
     - Detects emotional manipulation
     - Separate from factual accuracy
     
+    ✅ **Multilingual Support** 🌍
+    - Auto-detects language
+    - 10+ languages supported
+    - Multilingual NLI models
+    
     ✅ **Transparent Reasoning**
     - Evidence cards with sources
     - Confidence score breakdown
@@ -129,9 +176,10 @@ with st.sidebar:
     st.header("How to Use")
     st.write("""
     1. Choose input method (URL or Text)
-    2. Enter article content
-    3. Click 'Analyze Article'
-    4. Review the detailed results
+    2. Select language (or use auto-detect)
+    3. Enter article content
+    4. Click 'Analyze Article'
+    5. Review the detailed results
     """)
     
     st.header("Verdict Types")

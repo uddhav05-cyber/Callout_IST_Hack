@@ -19,6 +19,7 @@ from langchain_groq import ChatGroq
 
 from config.settings import settings
 from src.models import Claim
+from src.language_support import Language, detectLanguage, getClaimExtractionPrompt
 
 
 # Configure logging
@@ -30,9 +31,9 @@ class LLMError(Exception):
     pass
 
 
-def buildClaimExtractionPrompt(articleText: str) -> str:
+def buildClaimExtractionPrompt(articleText: str, language: Optional[Language] = None) -> str:
     """
-    Build a prompt for the LLM to extract factual claims from article text.
+    Build a language-specific prompt for the LLM to extract factual claims from article text.
     
     The prompt instructs the LLM to:
     - Extract atomic, verifiable factual claims
@@ -42,9 +43,10 @@ def buildClaimExtractionPrompt(articleText: str) -> str:
     
     Args:
         articleText: The article text to extract claims from.
+        language: Target language (auto-detected if None)
     
     Returns:
-        str: A formatted prompt string for the LLM.
+        str: A formatted prompt string for the LLM in the appropriate language.
     
     Preconditions:
         - articleText is non-null and non-empty
@@ -56,22 +58,19 @@ def buildClaimExtractionPrompt(articleText: str) -> str:
     assert articleText is not None and len(articleText.strip()) > 0, \
         "Article text must be non-empty"
     
+    # Auto-detect language if not provided
+    if language is None or language == Language.AUTO:
+        language = detectLanguage(articleText)
+        logger.info(f"Auto-detected language: {language.value}")
+    
+    # Get language-specific prompt templates
+    prompt_templates = getClaimExtractionPrompt(language)
+    
     prompt_template = PromptTemplate(
-        input_variables=["article_text"],
-        template="""You are a fact-checking assistant. Your task is to extract atomic, verifiable factual claims from the following article.
+        input_variables=["system", "instructions", "article_text"],
+        template="""{system}
 
-INSTRUCTIONS:
-1. Extract ONLY factual claims that can be verified (e.g., "The GDP grew by 5% in 2023")
-2. DO NOT extract opinions, subjective statements, or predictions (e.g., "This is the best policy")
-3. Each claim should be atomic (one fact per claim) and self-contained
-4. Assign an importance score (0.0 to 1.0) to each claim based on its significance to the article's main point
-5. Provide brief context for each claim (1-2 sentences from the article)
-
-FORMAT YOUR RESPONSE AS:
-CLAIM: [claim text]
-IMPORTANCE: [score between 0.0 and 1.0]
-CONTEXT: [brief context]
----
+{instructions}
 
 ARTICLE TEXT:
 {article_text}
@@ -80,7 +79,11 @@ EXTRACTED CLAIMS:
 """
     )
     
-    prompt = prompt_template.format(article_text=articleText.strip())
+    prompt = prompt_template.format(
+        system=prompt_templates["system"],
+        instructions=prompt_templates["instructions"],
+        article_text=articleText.strip()
+    )
     
     assert len(prompt) > 0, "Generated prompt must be non-empty"
     return prompt
@@ -481,19 +484,21 @@ def ruleBasedClaimExtraction(articleText: str) -> List[Tuple[str, float, str]]:
     return claims
 
 
-def extractClaims(articleText: str) -> List[Claim]:
+def extractClaims(articleText: str, language: Optional[Language] = None) -> List[Claim]:
     """
     Extract atomic, verifiable claims from article text using LLM with fallback.
     
     This is the main entry point for claim extraction. It:
-    1. Attempts to use LLM (with retries)
-    2. Falls back to rule-based extraction if LLM fails
-    3. Filters claims using isFactualClaim()
-    4. Ranks claims by importance using calculateImportance()
-    5. Returns structured Claim objects
+    1. Auto-detects language if not provided
+    2. Attempts to use LLM with language-specific prompts (with retries)
+    3. Falls back to rule-based extraction if LLM fails
+    4. Filters claims using isFactualClaim()
+    5. Ranks claims by importance using calculateImportance()
+    6. Returns structured Claim objects
     
     Args:
         articleText: The article text to extract claims from.
+        language: Target language (auto-detected if None)
     
     Returns:
         List[Claim]: List of Claim objects sorted by importance (descending).
@@ -518,14 +523,19 @@ def extractClaims(articleText: str) -> List[Claim]:
         raise ValueError("Article text cannot be empty")
     
     articleText = articleText.strip()
-    logger.info(f"Extracting claims from article ({len(articleText)} characters)")
+    
+    # Auto-detect language if not provided
+    if language is None or language == Language.AUTO:
+        language = detectLanguage(articleText)
+    
+    logger.info(f"Extracting claims from article ({len(articleText)} characters, language: {language.value})")
     
     raw_claims = []
     used_fallback = False
     
     try:
-        # Step 1: Try LLM-based extraction
-        prompt = buildClaimExtractionPrompt(articleText)
+        # Step 1: Try LLM-based extraction with language-specific prompt
+        prompt = buildClaimExtractionPrompt(articleText, language)
         llm_response = callLLM(prompt, max_retries=settings.MAX_RETRIES)
         raw_claims = parseLLMResponse(llm_response)
         
@@ -569,7 +579,7 @@ def extractClaims(articleText: str) -> List[Claim]:
         # Return empty list - higher-level code should handle UNVERIFIED verdict
         # This satisfies Requirement 2.4: return UNVERIFIED verdict if no claims extracted
     
-    logger.info(f"Successfully extracted {len(claims)} claims (fallback: {used_fallback})")
+    logger.info(f"Successfully extracted {len(claims)} claims (fallback: {used_fallback}, language: {language.value})")
     
     # Postcondition checks
     assert all(0.0 <= claim.importance <= 1.0 for claim in claims), \

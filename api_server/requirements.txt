@@ -1,0 +1,19 @@
+# FastAPI server dependencies
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+
+# LLM backends (choose one or both)
+ollama==0.1.6  # Recommended: Easy to use
+# transformers==4.37.0  # Alternative: Direct model loading
+# torch==2.1.2  # Required for transformers
+
+# Search (no API key needed!)
+duckduckgo-search==4.1.1
+
+# Language detection
+langdetect==1.0.9
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0

@@ -8,11 +8,15 @@ Requirements: 16.1, 16.2, 16.3, 16.4, 16.5
 """
 
 import os
+import logging
 from typing import Optional
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 
 class ConfigurationError(Exception):
@@ -23,7 +27,12 @@ class ConfigurationError(Exception):
 class Settings:
     """Configuration settings for the Fake News Detection System."""
     
-    # API Keys - Load from environment variables
+    # Self-Hosted API Configuration (NEW - No external API keys needed!)
+    USE_SELF_HOSTED_API: bool = os.getenv("USE_SELF_HOSTED_API", "false").lower() == "true"
+    SELF_HOSTED_API_URL: str = os.getenv("SELF_HOSTED_API_URL", "http://localhost:8000")
+    SELF_HOSTED_API_KEY: Optional[str] = os.getenv("SELF_HOSTED_API_KEY")
+    
+    # External API Keys (Legacy - Optional if using self-hosted)
     OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY")
     GROQ_API_KEY: Optional[str] = os.getenv("GROQ_API_KEY")
     SERPER_API_KEY: Optional[str] = os.getenv("SERPER_API_KEY")
@@ -51,18 +60,29 @@ class Settings:
         Raises:
             ConfigurationError: If required API keys are missing.
         """
+        # If using self-hosted API, skip external API validation
+        if cls.USE_SELF_HOSTED_API:
+            if not cls.SELF_HOSTED_API_URL:
+                raise ConfigurationError(
+                    "SELF_HOSTED_API_URL is required when USE_SELF_HOSTED_API=true"
+                )
+            logger.info("Using self-hosted API - external API keys not required")
+            return
+        
         # At least one LLM API key must be present
         if not cls.OPENAI_API_KEY and not cls.GROQ_API_KEY:
             raise ConfigurationError(
                 "At least one LLM API key is required. "
-                "Please set OPENAI_API_KEY or GROQ_API_KEY in your environment."
+                "Please set OPENAI_API_KEY or GROQ_API_KEY in your environment. "
+                "Or set USE_SELF_HOSTED_API=true to use your own API."
             )
         
         # At least one search API key must be present
         if not cls.SERPER_API_KEY and not cls.TAVILY_API_KEY:
             raise ConfigurationError(
                 "At least one search API key is required. "
-                "Please set SERPER_API_KEY or TAVILY_API_KEY in your environment."
+                "Please set SERPER_API_KEY or TAVILY_API_KEY in your environment. "
+                "Or set USE_SELF_HOSTED_API=true to use your own API."
             )
         
         # Validate numeric ranges

@@ -11,6 +11,7 @@ import logging
 
 from src.models import NLIResult, VerificationScore, VerdictType, RelationshipLabel
 from config.settings import settings
+from src.language_support import Language, getMultilingualNLIModel
 
 # Use TYPE_CHECKING to avoid circular imports
 if TYPE_CHECKING:
@@ -23,13 +24,17 @@ _nli_model_cache: Optional[Tuple] = None
 _model_load_failed: bool = False
 
 
-def load_nli_model() -> Optional[Tuple]:
+def load_nli_model(language: Language = Language.ENGLISH) -> Optional[Tuple]:
     """
     Load and cache the HuggingFace NLI model in memory.
     
-    This function loads the NLI model specified in settings (default: facebook/bart-large-mnli)
-    and caches it in memory to avoid reloading on subsequent calls. If model loading fails,
-    it logs the error and returns None, allowing the system to fall back to keyword matching.
+    This function loads the NLI model appropriate for the language and caches it in memory
+    to avoid reloading on subsequent calls. For non-English languages, it uses multilingual
+    models. If model loading fails, it logs the error and returns None, allowing the system
+    to fall back to keyword matching.
+    
+    Args:
+        language: Target language for NLI model selection
     
     Returns:
         Optional[Tuple]: Tuple of (model, tokenizer) if successful, None if loading fails.
@@ -49,15 +54,17 @@ def load_nli_model() -> Optional[Tuple]:
         return None
     
     try:
-        logger.info(f"Loading NLI model: {settings.NLI_MODEL_NAME}")
+        # Get appropriate model for language
+        model_name = getMultilingualNLIModel(language)
+        logger.info(f"Loading NLI model for {language.value}: {model_name}")
         
         # Import transformers here to avoid import errors if not installed
         from transformers import AutoTokenizer, AutoModelForSequenceClassification
         import torch
         
         # Load tokenizer and model
-        tokenizer = AutoTokenizer.from_pretrained(settings.NLI_MODEL_NAME)
-        model = AutoModelForSequenceClassification.from_pretrained(settings.NLI_MODEL_NAME)
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForSequenceClassification.from_pretrained(model_name)
         
         # Set model to evaluation mode
         model.eval()
@@ -65,7 +72,7 @@ def load_nli_model() -> Optional[Tuple]:
         # Cache the model and tokenizer
         _nli_model_cache = (model, tokenizer)
         
-        logger.info(f"Successfully loaded NLI model: {settings.NLI_MODEL_NAME}")
+        logger.info(f"Successfully loaded NLI model: {model_name}")
         return _nli_model_cache
         
     except Exception as e:
@@ -109,13 +116,13 @@ def formatForNLI(premise: str, hypothesis: str) -> Dict:
     }
 
 
-def verifyClaimAgainstEvidence(claim: 'Claim', evidence: 'Evidence') -> NLIResult:
+def verifyClaimAgainstEvidence(claim: 'Claim', evidence: 'Evidence', language: Language = Language.ENGLISH) -> NLIResult:
     """
     Verify a claim against evidence using Natural Language Inference.
     
     This function implements the NLI verification algorithm from the design document:
     1. Prepare input for NLI model (premise=evidence, hypothesis=claim)
-    2. Run NLI model inference
+    2. Run NLI model inference with appropriate multilingual model
     3. Extract entailment, contradiction, and neutral scores
     4. Validate that scores sum to approximately 1.0 (within 0.01 tolerance)
     5. Assign label (SUPPORTS, REFUTES, NEUTRAL) based on highest score
@@ -125,6 +132,7 @@ def verifyClaimAgainstEvidence(claim: 'Claim', evidence: 'Evidence') -> NLIResul
     Args:
         claim: Claim object to verify
         evidence: Evidence object to compare against
+        language: Language of the claim and evidence
     
     Returns:
         NLIResult object with scores and label
@@ -144,8 +152,8 @@ def verifyClaimAgainstEvidence(claim: 'Claim', evidence: 'Evidence') -> NLIResul
     premise = evidence.snippet
     hypothesis = claim.text
     
-    # Try to load the NLI model
-    model_tuple = load_nli_model()
+    # Try to load the NLI model (language-specific)
+    model_tuple = load_nli_model(language)
     
     if model_tuple is not None:
         # Use NLI model for inference
@@ -202,7 +210,7 @@ def verifyClaimAgainstEvidence(claim: 'Claim', evidence: 'Evidence') -> NLIResul
             label = max(scores, key=scores.get)
             
             logger.debug(
-                f"NLI inference complete: entailment={entailment_score:.3f}, "
+                f"NLI inference complete ({language.value}): entailment={entailment_score:.3f}, "
                 f"contradiction={contradiction_score:.3f}, neutral={neutral_score:.3f}, "
                 f"label={label}"
             )
