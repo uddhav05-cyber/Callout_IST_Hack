@@ -14,8 +14,11 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Configuration
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+# Configuration - Try Streamlit secrets first, then environment variables
+try:
+    GROQ_API_KEY = st.secrets.get("GROQ_API_KEY", os.getenv("GROQ_API_KEY", ""))
+except:
+    GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
 # Page config
 st.set_page_config(
@@ -568,11 +571,56 @@ elif st.session_state.page == 'detector':
 
     # Input
     st.markdown("---")
-    claim = st.text_area(
-        "Enter a news claim to verify:",
-        height=150,
-        placeholder="Example: The Earth is flat"
-    )
+    
+    # Tab selection for input type
+    input_tab1, input_tab2 = st.tabs(["📝 Text Claim", "🔗 Article URL"])
+    
+    with input_tab1:
+        claim = st.text_area(
+            "Enter a news claim to verify:",
+            height=150,
+            placeholder="Example: The Earth is flat",
+            key="text_claim"
+        )
+    
+    with input_tab2:
+        article_url = st.text_input(
+            "Enter article URL:",
+            placeholder="https://example.com/news-article",
+            key="article_url"
+        )
+        st.info("💡 We'll extract the main claim from the article and verify it")
+        
+        # If URL is provided, try to extract content
+        if article_url and article_url.strip():
+            try:
+                import requests
+                from bs4 import BeautifulSoup
+                
+                with st.spinner("🔍 Fetching article..."):
+                    response = requests.get(article_url, timeout=10)
+                    soup = BeautifulSoup(response.content, 'html.parser')
+                    
+                    # Extract title and first few paragraphs
+                    title = soup.find('h1')
+                    title_text = title.get_text().strip() if title else ""
+                    
+                    # Get paragraphs
+                    paragraphs = soup.find_all('p')
+                    article_text = ' '.join([p.get_text().strip() for p in paragraphs[:3]])
+                    
+                    # Combine title and text
+                    claim = f"{title_text}. {article_text[:500]}"
+                    
+                    st.success("✅ Article extracted successfully!")
+                    with st.expander("📄 Extracted Content"):
+                        st.write(f"**Title:** {title_text}")
+                        st.write(f"**Preview:** {article_text[:300]}...")
+                        
+            except Exception as e:
+                st.error(f"❌ Failed to fetch article: {str(e)}")
+                st.info("💡 Try entering the claim manually in the Text Claim tab")
+                claim = ""
 
     # Analyze button
     col1, col2, col3 = st.columns([1, 2, 1])
