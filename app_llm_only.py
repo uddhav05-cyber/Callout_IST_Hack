@@ -686,18 +686,24 @@ Be direct and clear. Base your judgment on factual accuracy."""
                     lines = result.split("\n")
                     for line in lines:
                         if "VERDICT:" in line:
-                            verdict_text = line.split("VERDICT:")[1].strip()
-                            if "TRUE" in verdict_text.upper() and "FALSE" not in verdict_text.upper():
+                            verdict_text = line.split("VERDICT:")[1].strip().upper()
+                            # Extract just the verdict word (first word after VERDICT:)
+                            verdict_word = verdict_text.split()[0] if verdict_text.split() else ""
+                            
+                            if verdict_word == "TRUE":
                                 verdict = "TRUE"
-                            elif "FALSE" in verdict_text.upper():
+                            elif verdict_word == "FALSE":
                                 verdict = "FALSE"
                         elif "EXPLANATION:" in line:
-                            explanation = line.split("EXPLANATION:")[1].strip()
+                            explanation = "\n".join(lines[lines.index(line):])
+                            explanation = explanation.split("EXPLANATION:")[1].strip()
+                            break
                 else:
-                    # Fallback parsing
-                    if "TRUE" in result.upper()[:50] and "FALSE" not in result.upper()[:50]:
+                    # Fallback parsing - look for verdict in first 100 chars
+                    first_part = result.upper()[:100]
+                    if "VERDICT: TRUE" in first_part or first_part.startswith("TRUE"):
                         verdict = "TRUE"
-                    elif "FALSE" in result.upper()[:50]:
+                    elif "VERDICT: FALSE" in first_part or first_part.startswith("FALSE"):
                         verdict = "FALSE"
                 
                 # Display result
