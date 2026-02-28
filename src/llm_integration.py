@@ -128,9 +128,11 @@ def callLLM(prompt: str, max_retries: int = 3) -> str:
         if settings.GROQ_API_KEY:
             llm = ChatGroq(
                 api_key=settings.GROQ_API_KEY,
-                model_name="mixtral-8x7b-32768",
-                temperature=0.1,
-                max_tokens=2048
+                model_name="llama-3.3-70b-versatile",  # Updated from decommissioned mixtral model
+                temperature=0.3,  # Increased from 0.1 for more variation
+                max_tokens=2048,
+                timeout=30,  # Add 30 second timeout
+                max_retries=2
             )
             api_name = "Groq"
             logger.info("Using Groq API for LLM calls")
@@ -138,8 +140,10 @@ def callLLM(prompt: str, max_retries: int = 3) -> str:
             llm = ChatOpenAI(
                 api_key=settings.OPENAI_API_KEY,
                 model_name="gpt-3.5-turbo",
-                temperature=0.1,
-                max_tokens=2048
+                temperature=0.3,  # Increased from 0.1 for more variation
+                max_tokens=2048,
+                timeout=30,  # Add 30 second timeout
+                max_retries=2
             )
             api_name = "OpenAI"
             logger.info("Using OpenAI API for LLM calls")

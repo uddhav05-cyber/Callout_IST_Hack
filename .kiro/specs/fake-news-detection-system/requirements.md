@@ -253,6 +253,11 @@ The Fake News Detection System is a multi-source verification platform that anal
 3. WHEN a verdict is UNVERIFIED, THE System SHALL ensure the confidence score is less than 50
 4. WHEN a verdict is MISLEADING, THE System SHALL ensure the confidence score is approximately 50
 5. WHEN the same article is verified multiple times, THE System SHALL produce identical results
+6. WHEN more than 40% of claims are FALSE, THE System SHALL assign a LIKELY_FALSE verdict
+7. WHEN the final score is below 40, THE System SHALL assign a LIKELY_FALSE verdict
+8. WHEN more than 60% of claims are TRUE and score is above 65, THE System SHALL assign a LIKELY_TRUE verdict
+9. WHEN the score is between 40 and 65, THE System SHALL assign a MISLEADING verdict
+10. THE System SHALL NOT assign LIKELY_TRUE verdict to articles with predominantly false claims
 
 ### Requirement 19: Evidence Relevance Scoring
 

@@ -468,13 +468,25 @@ def generateVerdict(
     misleading_count = sum(1 for v in verificationScores if v.verdict == VerdictType.MISLEADING)
     total_claims = len(verificationScores)
     
-    # Determine overall verdict
-    if final_score >= 70 and true_count > total_claims * 0.6:
-        overall_verdict = OverallVerdictType.LIKELY_TRUE
-    elif final_score <= 30 or false_count > total_claims * 0.5:
+    # Determine overall verdict with stricter logic
+    # Priority: FALSE > MISLEADING > TRUE > UNVERIFIED
+    
+    # If majority of claims are FALSE, verdict is FALSE
+    if false_count > total_claims * 0.4:  # More than 40% false
         overall_verdict = OverallVerdictType.LIKELY_FALSE
-    elif misleading_count > total_claims * 0.3 or (30 < final_score < 70):
+    # If score is very low, verdict is FALSE
+    elif final_score < 40:
+        overall_verdict = OverallVerdictType.LIKELY_FALSE
+    # If significant misleading content, verdict is MISLEADING
+    elif misleading_count > total_claims * 0.3:  # More than 30% misleading
         overall_verdict = OverallVerdictType.MISLEADING
+    # If score is medium range, verdict is MISLEADING
+    elif 40 <= final_score < 65:
+        overall_verdict = OverallVerdictType.MISLEADING
+    # If majority of claims are TRUE and score is high, verdict is TRUE
+    elif true_count > total_claims * 0.6 and final_score >= 65:
+        overall_verdict = OverallVerdictType.LIKELY_TRUE
+    # Default to UNVERIFIED if unclear
     else:
         overall_verdict = OverallVerdictType.UNVERIFIED
     

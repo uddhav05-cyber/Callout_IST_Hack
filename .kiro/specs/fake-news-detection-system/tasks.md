@@ -252,6 +252,30 @@ This implementation plan breaks down the fake news detection system into discret
     - Test penalty application
     - Test verdict determination logic
     - _Requirements: 5.2, 5.3, 5.4, 5.5, 5.6, 5.9, 6.1, 6.2, 9.1, 9.3, 9.4_
+  
+  - [ ] 12.7 Fix and test verdict logic for FALSE news detection (BUGFIX)
+    - **Bug Description**: System incorrectly shows all news as TRUE regardless of evidence
+    - **Root Cause**: Verdict determination logic in generateVerdict() was too lenient
+    - **Fix Applied**: Modified verdict thresholds in src/synthesis.py (lines 475-491):
+      - FALSE verdict: if >40% claims false OR score <40 (was >50% false OR score ≤30)
+      - MISLEADING verdict: if >30% misleading OR score 40-65 (was score 30-70)
+      - TRUE verdict: only if >60% true AND score ≥65 (was score ≥70)
+      - Priority order: FALSE > MISLEADING > TRUE > UNVERIFIED
+    - **Testing Steps**:
+      1. Restart Streamlit app: `streamlit run app_callout.py`
+      2. Test with known FALSE claim: "India won the 2023 cricket world cup" (Australia actually won)
+      3. Verify system returns FALSE verdict (not TRUE)
+      4. Test with known TRUE claim: "Australia won the 2023 cricket world cup"
+      5. Verify system returns TRUE verdict
+      6. Test with MISLEADING claim: mixed true/false statements
+      7. Verify system returns MISLEADING verdict
+      8. Document test results and adjust thresholds if needed
+    - **Success Criteria**:
+      - FALSE news correctly identified as FALSE (not TRUE)
+      - TRUE news correctly identified as TRUE
+      - MISLEADING news correctly identified as MISLEADING
+      - System produces different verdicts for different article types
+    - _Requirements: 5.3, 5.4, 5.5, 5.6, 18.1, 18.2, 18.5_
 
 - [ ] 13. Implement visual verification module
   - [ ] 13.1 Create reverse image search integration

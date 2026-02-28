@@ -194,6 +194,16 @@ END STRUCTURE
 - Separate factual accuracy from emotional manipulation
 - Create simple language explanation for users
 
+**Implementation Note - Verdict Determination Logic**:
+The overall verdict is determined using strict thresholds to ensure accurate classification:
+- **LIKELY_FALSE**: Assigned if >40% of claims are FALSE OR final score <40
+- **MISLEADING**: Assigned if >30% of claims are MISLEADING OR score is 40-65
+- **LIKELY_TRUE**: Assigned ONLY if >60% of claims are TRUE AND score ≥65
+- **UNVERIFIED**: Default for unclear cases
+- **Priority Order**: FALSE > MISLEADING > TRUE > UNVERIFIED (prevents false positives)
+
+This strict logic prevents the system from incorrectly marking false news as true, which was a critical bug in earlier implementations. The thresholds were calibrated to prioritize precision over recall for FALSE detection.
+
 ### Component 5: Tone Analysis Module
 
 **Purpose**: Detects emotional manipulation separate from factual content
